@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcGreeterClient";
+package greet;
+
+// The greeting service definition.
+service Greeter {
+     rpc SayHello (HelloRequest) returns (HelloReply);
+  
+  // Sends a greeting
+  rpc UploadFile(UploadFileRequest) returns (UploadResponse);
+}
+
+
+message UploadFileRequest {
+  string filename = 1;
+  string extension =2;
+  bytes filedata = 3;
+}
+
+message UploadResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloRequestFrom {
+  string name = 1;
+  string from = 2;
+}
+
+message HelloReply {
+  string message = 1;
+  HelloReply nested = 2;
+}

@@ -1,0 +1,29 @@
+{
+  "ReRoutes": [
+    {
+      "DownstreamPathTemplate": "/api/upload", // Endpoint para recibir archivos
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost", // Host del servicio destino
+          "Port": 5001 // Puerto del servicio destino
+        }
+      ],
+      "UpstreamPathTemplate": "/upload", // Ruta en el proxy
+      "UpstreamHttpMethod": [ "POST" ],
+      "FileUpload": true // Habilita la carga de archivos
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5000",
+    "ServiceDiscoveryProvider": {
+      // Configuración del proveedor de servicios (si es aplicable)
+    },
+    "SwaggerEndPoints": [
+      {
+        "Name": "Nombre de tu servicio de destino",
+        "EndPoint": "/swagger/v1/swagger.json" // Ruta a la documentación Swagger de tu servicio de destino
+      }
+    ]
+  }
+}
