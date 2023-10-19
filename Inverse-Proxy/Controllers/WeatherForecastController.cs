@@ -9,7 +9,7 @@ namespace Inverse_Proxy.Controllers
     public class FileUploadController : ControllerBase
     {
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadFile(IFormFile file)
+        public async Task<IActionResult> UploadFile(IFormFile[] files)
         {
             // URL de tu servicio gRPC
             string grpcServiceUrl = "https://localhost:7201";
@@ -22,33 +22,35 @@ namespace Inverse_Proxy.Controllers
 
             // Crea un cliente para tu servicio gRPC
             var client = new Greeter.GreeterClient(channel);
-
-            using (MemoryStream memoryStream = new MemoryStream())
+            foreach (var file in files)
             {
-                // Copia el contenido del archivo IFormFile al MemoryStream
-                file.CopyTo(memoryStream);
-
-                // Obtén los datos del MemoryStream como un arreglo de bytes
-                byte[] fileData = memoryStream.ToArray();
-                // Crea una solicitud con el nombre del archivo y los datos
-                var request = new UploadFileRequest
+                using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    Extension = Path.GetExtension(file.FileName),
-                    Filename = file.FileName,
-                    Filedata = Google.Protobuf.ByteString.CopyFrom(fileData)
-                };
+                    // Copia el contenido del archivo IFormFile al MemoryStream
+                    file.CopyTo(memoryStream);
 
-                // Realiza la llamada al método UploadFile
-                var response = await client.UploadFileAsync(request);
+                    // Obtén los datos del MemoryStream como un arreglo de bytes
+                    byte[] fileData = memoryStream.ToArray();
+                    // Crea una solicitud con el nombre del archivo y los datos
+                    var request = new UploadFileRequest
+                    {
+                        Extension = Path.GetExtension(file.FileName),
+                        Filename = file.FileName,
+                        Filedata = Google.Protobuf.ByteString.CopyFrom(fileData)
+                    };
 
-                // Procesa la respuesta
-                if (response.Success)
-                {
-                    Console.WriteLine("Archivo subido exitosamente: " + response.Message);
-                }
-                else
-                {
-                    Console.WriteLine("Error al subir el archivo: " + response.Message);
+                    // Realiza la llamada al método UploadFile
+                    var response = await client.UploadFileAsync(request);
+
+                    // Procesa la respuesta
+                    if (response.Success)
+                    {
+                        Console.WriteLine("Archivo subido exitosamente: " + response.Message);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error al subir el archivo: " + response.Message);
+                    }
                 }
             }
             return Ok();
